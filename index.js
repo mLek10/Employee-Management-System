@@ -5,30 +5,43 @@ const inquirer = require('inquirer');
 const mysql = require('mysql2/promise');
 
 // Create a connection to the MySQL database
-const connection = mysql.createConnection({
+const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: 'Gizmosue1!', // Add your MySQL password if you have one
   database: 'employee_db',
+  waitForConnections: true,
+  connectionLimit: 10, // Adjust this as needed
+  queueLimit: 0,
 });
+
+async function executeQuery(query, values = []) {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.execute(query, values);
+    return rows;
+  } finally {
+    connection.release();
+  }
+}
 
 // Function to view all departments
 async function viewDepartments() {
-  const [rows] = await connection.query('SELECT * FROM department');
+  const [rows] = await executeQuery('SELECT * FROM department');
   console.table(rows);
   mainMenu();
 }
 
 // Function to view all roles
 async function viewRoles() {
-  const [rows] = await connection.query('SELECT * FROM role');
+  const [rows] = await executeQuery('SELECT * FROM role');
   console.table(rows);
   mainMenu();
 }
 
 // Function to view all employees
 async function viewEmployees() {
-  const [rows] = await connection.query('SELECT * FROM employee');
+  const [rows] = await executeQuery('SELECT * FROM employee');
   console.table(rows);
   mainMenu();
 }
@@ -43,14 +56,14 @@ async function addDepartment() {
     },
   ]);
   
-  await connection.query('INSERT INTO department (name) VALUES (?)', [name]);
+  await executeQuery('INSERT INTO department (name) VALUES (?)', [name]);
   console.log(`Department "${name}" added successfully.`);
   mainMenu();
 }
 
 // Function to add a role
 async function addRole() {
-  const departments = await connection.query('SELECT * FROM department');
+  const departments = await executeQuery('SELECT * FROM department');
   const departmentChoices = departments[0].map((department) => ({
     name: department.name,
     value: department.id,
@@ -75,7 +88,7 @@ async function addRole() {
     },
   ]);
 
-  await connection.query('INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)', [
+  await executeQuery('INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)', [
     title,
     salary,
     departmentId,
