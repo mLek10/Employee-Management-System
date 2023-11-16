@@ -6,7 +6,7 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'Gizmosue1!',
-  database: 'your_database',
+  database: 'employee_db',
 });
 
 // Connect to the database
@@ -64,4 +64,13 @@ function startApp() {
           break;
       }
     });
+}
+
+function viewDepartments() {
+  const query = 'SELECT * FROM department';
+  connection.query(query, (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    startApp();
+  });
 }
