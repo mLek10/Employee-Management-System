@@ -65,7 +65,7 @@ function startApp() {
       }
     });
 }
-
+// Function to view all departments
 function viewDepartments() {
   const query = 'SELECT * FROM department';
   connection.query(query, (err, res) => {
@@ -74,7 +74,7 @@ function viewDepartments() {
     startApp();
   });
 }
-
+// Function to view all roles
 function viewRoles() {
   const query = 'SELECT * FROM role';
   connection.query(query, (err, res) => {
@@ -83,7 +83,7 @@ function viewRoles() {
     startApp();
   });
 }
-
+// Function to view all employees
 function viewEmployees() {
   const query = 'SELECT * FROM employee';
   connection.query(query, (err, res) => {
@@ -91,4 +91,23 @@ function viewEmployees() {
     console.table(res);
     startApp();
   });
+}
+// Function to add a department
+function addDepartment() { 
+  inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'department',
+        message: 'Enter the name of the department?',
+      },
+    ])
+    .then((answer) => {
+      const query = 'INSERT INTO department SET ?';
+      connection.query(query, { name: answer.department }, (err, res) => {
+        if (err) throw err;
+        console.log('Department added successfully!');
+        startApp();
+      });
+    });
 }
