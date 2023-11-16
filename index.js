@@ -1,11 +1,17 @@
-// Import and require mysql2
-// const mysql = require('mysql2');
 
 const inquirer = require('inquirer');
 const mysql = require('mysql2/promise');
+const express = require('express');
+const { connection } = require('mongoose');
+const PORT = process.env.PORT || 3001;
+
+const app = express();
+
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 // Create a connection to the MySQL database
-const pool = mysql.createPool({
+const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'Gizmosue1!', // Add your MySQL password if you have one
@@ -17,78 +23,39 @@ const pool = mysql.createPool({
 
 async function executeQuery(query, values = []) {
   const connection = await pool.getConnection();
+
   try {
     const [rows] = await connection.execute(query, values);
     return rows;
+  }catch (err) {
+    console.error('Error executing query:', err);
+    throw err;
   } finally {
     connection.release();
   }
 }
 
-// Function to start the application
-async function mainMenu() {
-  const { action } = await inquirer.prompt([
-    {
-      type: 'list',
-      name: 'action',
-      message: 'Select an action:',
-      choices: [
-        'View all departments',
-        'View all roles',
-        'View all employees',
-        'Add a department',
-        'Add a role',
-        'Add an employee',
-        'Quit',
-      ],
-    },
-  ]);
-
-  switch (action) {
-    case 'View all departments':
-      viewDepartments();
-      break;
-    case 'View all roles':
-      viewRoles();
-      break;
-    case 'View all employees':
-      viewEmployees();
-      break;
-    case 'Add a department':
-      addDepartment();
-      break;
-    case 'Add a role':
-      addRole();
-      break;
-    case 'Add an employee':
-      addEmployee();
-      break;
-    case 'Quit':
-      connection.end();
-      console.log('Goodbye!');
-      break;
-  }
-}
 
 
 // Function to view all departments
 async function viewDepartments() {
   const [rows] = await executeQuery('SELECT * FROM department');
-  console.table(rows);
+  console.log(rows);
+  console.table(rows, ['id', 'name']); // Specify the columns to display
   mainMenu();
 }
 
 // Function to view all roles
 async function viewRoles() {
   const [rows] = await executeQuery('SELECT * FROM role');
-  console.table(rows);
+  console.table(rows, ['id', 'title', 'salary', 'department_id']);
   mainMenu();
 }
 
 // Function to view all employees
 async function viewEmployees() {
   const [rows] = await executeQuery('SELECT * FROM employee');
-  console.table(rows);
+  console.table(rows, ['id', 'first_name', 'last_name', 'role_id', 'manager_id']);
   mainMenu();
 }
 
@@ -110,6 +77,11 @@ async function addDepartment() {
 // Function to add a role
 async function addRole() {
   const departments = await executeQuery('SELECT * FROM department');
+  if (!departments[0]) {
+    console.log('No departments found. Please add a department first.');
+    mainMenu();
+    return;
+  }
   const departmentChoices = departments[0].map((department) => ({
     name: department.name,
     value: department.id,
@@ -197,6 +169,51 @@ async function addEmployee() {
   console.log(`Employee "${first_name} ${last_name}" added successfully.`);
   mainMenu();
 }
+// Function to start the application
+async function mainMenu() {
+  const { action } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'action',
+      message: 'Select an action:',
+      choices: [
+        'View all departments',
+        'View all roles',
+        'View all employees',
+        'Add a department',
+        'Add a role',
+        'Add an employee',
+        'Quit',
+      ],
+    },
+  ]);
+
+  switch (action) {
+    case 'View all departments':
+      viewDepartments();
+      break;
+    case 'View all roles':
+      viewRoles();
+      break;
+    case 'View all employees':
+      viewEmployees();
+      break;
+    case 'Add a department':
+      addDepartment();
+      break;
+    case 'Add a role':
+      addRole();
+      break;
+    case 'Add an employee':
+      addEmployee();
+      break;
+    case 'Quit':
+      connection.end();
+      console.log('Goodbye!');
+      break;
+  }
+}
+
 
 // Start the application
 mainMenu();
