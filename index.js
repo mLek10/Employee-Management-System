@@ -25,6 +25,52 @@ async function executeQuery(query, values = []) {
   }
 }
 
+// Function to start the application
+async function mainMenu() {
+  const { action } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'action',
+      message: 'Select an action:',
+      choices: [
+        'View all departments',
+        'View all roles',
+        'View all employees',
+        'Add a department',
+        'Add a role',
+        'Add an employee',
+        'Quit',
+      ],
+    },
+  ]);
+
+  switch (action) {
+    case 'View all departments':
+      viewDepartments();
+      break;
+    case 'View all roles':
+      viewRoles();
+      break;
+    case 'View all employees':
+      viewEmployees();
+      break;
+    case 'Add a department':
+      addDepartment();
+      break;
+    case 'Add a role':
+      addRole();
+      break;
+    case 'Add an employee':
+      addEmployee();
+      break;
+    case 'Quit':
+      connection.end();
+      console.log('Goodbye!');
+      break;
+  }
+}
+
+
 // Function to view all departments
 async function viewDepartments() {
   const [rows] = await executeQuery('SELECT * FROM department');
@@ -150,48 +196,6 @@ async function addEmployee() {
 
   console.log(`Employee "${first_name} ${last_name}" added successfully.`);
   mainMenu();
-}
-
-
-// Function to start the application
-async function mainMenu() {
-  const { action } = await inquirer.prompt([
-    {
-      type: 'list',
-      name: 'action',
-      message: 'Select an action:',
-      choices: [
-        'View all departments',
-        'View all roles',
-        'View all employees',
-        'Add a department',
-        'Add a role',
-        'Quit',
-      ],
-    },
-  ]);
-
-  switch (action) {
-    case 'View all departments':
-      viewDepartments();
-      break;
-    case 'View all roles':
-      viewRoles();
-      break;
-    case 'View all employees':
-      viewEmployees();
-      break;
-    case 'Add a department':
-      addDepartment();
-      break;
-    case 'Add a role':
-      addRole();
-      break;
-    case 'Quit':
-      connection.end();
-      console.log('Goodbye!');
-      break;
-  }
 }
 
 // Start the application
