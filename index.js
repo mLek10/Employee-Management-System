@@ -97,6 +97,62 @@ async function addRole() {
   mainMenu();
 }
 
+//add an employee
+async function addEmployee() {
+  // Fetch roles and managers from the database
+  const roles = await executeQuery('SELECT * FROM role');
+  const managers = await executeQuery('SELECT * FROM employee');
+
+  // Map role and manager choices for the inquirer prompt
+  const roleChoices = roles[0].map((role) => ({
+    name: role.title,
+    value: role.id,
+  }));
+
+  const managerChoices = managers[0].map((manager) => ({
+    name: `${manager.first_name} ${manager.last_name}`,
+    value: manager.id,
+  }));
+
+  // Prompt user for employee information
+  const { first_name, last_name, role_id, manager_id } = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'first_name',
+      message: 'Enter the first name of the employee:',
+    },
+    {
+      type: 'input',
+      name: 'last_name',
+      message: 'Enter the last name of the employee:',
+    },
+    {
+      type: 'list',
+      name: 'role_id',
+      message: 'Select the role for the employee:',
+      choices: roleChoices,
+    },
+    {
+      type: 'list',
+      name: 'manager_id',
+      message: 'Select the manager for the employee:',
+      choices: [{ name: 'None', value: null }, ...managerChoices], // Allow choosing no manager
+    },
+  ]);
+
+  // Execute the query to add the employee to the database
+  await executeQuery('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [
+    first_name,
+    last_name,
+    role_id,
+    manager_id,
+  ]);
+
+  console.log(`Employee "${first_name} ${last_name}" added successfully.`);
+  mainMenu();
+}
+
+
 // Function to start the application
 async function mainMenu() {
   const { action } = await inquirer.prompt([
