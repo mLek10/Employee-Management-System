@@ -14,7 +14,9 @@ https://drive.google.com/file/d/1EHoTY6poJF8PNGnKl0B8LmliKfzNoT1a/view
  - **npm install**
 
  ## Usage
-To run the application use the command: **node index**
+To run the application use the command: 
+- **node index**
+
 Follow the prompts to perform various actions, such as viewing data or adding new records.
 
 ## Dependencies
@@ -26,8 +28,9 @@ Contributions are welcome. Feel free to open an issue or submit a pull request.
 
 ## Questions
 If you have any questions, please contact the project owner:
--GitHub: [Emily's GitHub](https://github.com/mLek10)
--E-Mail: [Emily's Email](caton.emily@yahoo.com)
+
+- GitHub: [Emily's GitHub](https://github.com/mLek10)
+- E-Mail: [Emily's Email](caton.emily@yahoo.com)
 
 ## Screenshots
 <img src="assets/screenshots1.png">
