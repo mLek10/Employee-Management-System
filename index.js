@@ -188,7 +188,7 @@ function updateEmployeeRole() {
     {
       type: 'input',
       name: 'role_id',
-      message: 'Enter the role id of the employee:',
+      message: 'Enter the new role id of the employee:',
     },
   ])  
   .then((answer) => {
