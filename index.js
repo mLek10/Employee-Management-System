@@ -99,7 +99,7 @@ function addDepartment() {
       {
         type: 'input',
         name: 'department',
-        message: 'Enter the name of the department?',
+        message: 'Enter the name of the department:',
       },
     ])
     .then((answer) => {
@@ -111,3 +111,69 @@ function addDepartment() {
       });
     });
 }
+// Function to add a role
+function addRole() {
+  inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'title',
+        message: 'Enter the title of the role?',
+      },
+      {
+        type: 'input',
+        name: 'salary',
+        message: 'Enter the salary of the role?',
+      },
+      {
+        type: 'input',
+        name: 'department_id',
+        message: 'Enter the department id of the role?',
+      },
+    ])
+    .then((answer) => {
+      const query = 'INSERT INTO role SET ?';
+      connection.query(query, answer, (err, res) => {
+        if (err) throw err;
+        console.log('Role added successfully!');
+        startApp();
+      });
+    }
+    );
+}
+
+// Function to add an employee
+function addEmployee() {
+  inquirer
+  .prompt([
+    {
+      type: 'input',
+      name: 'first_name',
+      message: 'Enter the first name of the employee:',
+    },
+    {
+      type: 'input',
+      name: 'last_name',
+      message: 'Enter the last name of the employee:',
+    },
+    {
+      type: 'input',
+      name: 'role_id',
+      message: 'Enter the role id of the employee:',
+    },
+    {
+      type: 'input',
+      name: 'manager_id',
+      message: 'Enter the manager id of the employee:',
+    },
+  ])
+.then((answer) => {
+  const query = 'INSERT INTO employee SET ?';
+  connection.query(query, answer, (err, res) => {
+    if (err) throw err;
+    console.log('Employee added successfully!');
+    startApp();
+  });
+});
+}
+
